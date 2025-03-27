@@ -1,6 +1,7 @@
 # generates the ezkl proofs that can be verified by the user as well as on the server 
 # The server is then sent the training result 
 import ezkl
+import json
 import torch
 import torch.nn as nn
 import torch.onnx
@@ -64,6 +65,11 @@ def get_user_profile(user_id, interactions_df, tfidf_matrix, ads_df):
 
 # Export the model to ONNX format
 user_profile_dummy = torch.rand(1, tfidf_matrix.shape[1])  # Dummy user profile for export
+data_array = user_profile_dummy.detach().numpy().reshape(-1).tolist()
+data = dict(input_data = [data_array])
+
+with open("input.json", "w") as f:
+    json.dump(data, f,indent=4)
 
 model = RecommendationModel(tfidf_matrix)
 onnx_path = "network.onnx"
