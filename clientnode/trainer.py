@@ -1,10 +1,15 @@
 # generates the ezkl proofs that can be verified by the user as well as on the server 
 # The server is then sent the training result 
-
+import ezkl
+import torch
+import torch.nn as nn
+import torch.onnx
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+
+
 
 # Load datasets
 ads_df = pd.read_csv("../trainingdata/ads_content.csv")  # Contains 'adId', 'title', 'description', 'category', 'tags'
@@ -19,6 +24,17 @@ ads_df["content_combined"] = ads_df["title"] + " " + ads_df["description"] + " "
 # Compute TF-IDF vectors
 vectorizer = TfidfVectorizer(stop_words="english")
 tfidf_matrix = vectorizer.fit_transform(ads_df["content_combined"])
+tfidf_tensor = torch.tensor(tfidf_matrix.toarray(), dtype=torch.float32)
+
+# PyTorch Model for Recommendation
+class RecommendationModel(nn.Module):
+    def __init__(self, tfidf_matrix):
+        super(RecommendationModel, self).__init__()
+        self.tfidf_matrix = nn.Parameter(torch.tensor(tfidf_matrix.toarray(), dtype=torch.float32), requires_grad=False)
+
+    def forward(self, user_profile):
+        similarity = torch.nn.functional.cosine_similarity(user_profile, self.tfidf_matrix, dim=1)
+        return similarity
 
 # Function to compute user profile vector
 def get_user_profile(user_id, interactions_df, tfidf_matrix, ads_df):
@@ -44,31 +60,14 @@ def get_user_profile(user_id, interactions_df, tfidf_matrix, ads_df):
             total_weight += score
 
     user_profile = weighted_sum_vector / total_weight if total_weight > 0 else weighted_sum_vector
-    return user_profile.reshape(1, -1)
+    return torch.tensor(user_profile.reshape(1, -1), dtype=torch.float32)
 
-# Function to generate recommendations
-def recommend_ads(user_id, interactions_df, tfidf_matrix, ads_df, top_n=10):
-    user_profile = get_user_profile(user_id, interactions_df, tfidf_matrix, ads_df)
-    if user_profile is None:
-        return None
+# Export the model to ONNX format
+user_profile_dummy = torch.rand(1, tfidf_matrix.shape[1])  # Dummy user profile for export
 
-    # Compute similarity between user profile and all ads
-    similarity_scores = cosine_similarity(user_profile, tfidf_matrix).flatten()
+model = RecommendationModel(tfidf_matrix)
+onnx_path = "network.onnx"
 
-    # Normalize scores
-    min_score, max_score = similarity_scores.min(), similarity_scores.max()
-    normalized_scores = (similarity_scores - min_score) / (max_score - min_score) if max_score != min_score else 0.5
+torch.onnx.export(model, user_profile_dummy, onnx_path, opset_version=10)
 
-    # Get top N recommended ads
-    ads_df["similarity"] = normalized_scores
-    top_ads = ads_df.sort_values(by="similarity", ascending=False).head(top_n)[["adId", "similarity"]]
-
-    return top_ads
-
-# Get recommendations for a user
-# can get recommendations for any user 
-# user_id_to_recommend = "4f3aecdc-f7d8-4718-925c-96d81c3765f3"
-# these shall be sent to the server for processing after encryption though. 
-def recommendations(user_id_to_recommend):
-    recommended_ads = recommend_ads(user_id_to_recommend, interactions_df, tfidf_matrix, ads_df)
-    print(recommended_ads)
+print(f"Model exported to {onnx_path}")
