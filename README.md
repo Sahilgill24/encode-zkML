@@ -17,6 +17,9 @@ https://github.com/Azure/cortana-intelligence-personalization-data-science-playb
 
 ## Architecture 
 
+
+<img src="./images/1.png"></img>
+
 data -> sent to the server makes it non sense 
 so the model shall be trained locally on the user's machine along with a neutral dataset of ads and their types 
 and the data then be encrypted and sent to a server 
@@ -24,5 +27,7 @@ which would then send the response containig the Ad id's that should be shown {t
 checked from the data set that contains the link's betweeen the ads and their similarity}
 
 otherwise 
+
+How interactions work and how data is kept private , also using lib Sodium to give out the result 
 
 sending the data straight to the server , which sends the corresponding ad id's 
