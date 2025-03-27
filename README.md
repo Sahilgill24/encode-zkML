@@ -1,7 +1,7 @@
 
 
 
-# Introduction
+# ZkAdTrust
 
 ## Overview
 Our zkML-based ad recommendation system leverages zero-knowledge proofs to deliver personalized ads while preserving user privacy. Instead of transmitting raw user data to a central server, all processing—such as updating local interaction datasets, computing TF-IDF embeddings, and generating similarity scores between ads—is performed on the client node. A proof generated using EZKL attests that the ads are displayed correctly, allowing the main server to verify ad delivery without accessing any sensitive information.
