@@ -1,16 +1,6 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
 # Introduction
 
 ## Overview
@@ -63,8 +53,8 @@ Our zkML-based ad recommendation system leverages zero-knowledge proofs to deliv
 
 ## Resources 
 
-https://www.geeksforgeeks.org/targeted-advertising-using-machine-learning/
+- https://www.geeksforgeeks.org/targeted-advertising-using-machine-learning/
 
-https://github.com/Azure/cortana-intelligence-personalization-data-science-playbook/blob/master/Personalized_Offers_from_Classifiers_Use_Case.md
+- https://github.com/Azure/cortana-intelligence-personalization-data-science-playbook/blob/master/Personalized_Offers_from_Classifiers_Use_Case.md
 
-https://carpentries-incubator.github.io/python-text-analysis/05-tf-idf-documentEmbeddings/index.html
+- https://carpentries-incubator.github.io/python-text-analysis/05-tf-idf-documentEmbeddings/index.html
