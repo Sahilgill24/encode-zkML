@@ -2,8 +2,11 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const cors = require('cors');
 
 const app = express();
+// Enable CORS for frontend requests
+app.use(cors());
 const PORT = 3000;
 
 // Ensure uploads folder exists
