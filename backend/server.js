@@ -3,10 +3,11 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+require('dotenv').config();
 
 const app = express();
 // Enable CORS for frontend requests
-app.use(cors());
+app.use(cors({ origin: process.env.ORIGIN ,credentials: true }));
 const PORT = 3000;
 
 // Ensure uploads folder exists
